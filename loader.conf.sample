@@ -1,0 +1,8 @@
+[loader]
+mail_handler = smtp
+#delay between loads 10 min in seconds
+load_interval = 600
+
+[telegrambot]
+access_token = telegram-bot-access-token
+chat_id = chat-id

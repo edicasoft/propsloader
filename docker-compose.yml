@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  loaders:
+    build: docker
+    image: propsloader:backend
+    container_name: loaders
+    working_dir: /project/app
+    volumes:
+      - ./:/project/app
+    links:
+      - db
+    environment:
+      PYTHONIOENCODING: UTF-8
+
+  db:
+    image: mysql:5.7
+    volumes:
+      - /var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: propsloader
+      MYSQL_USER: props
+      MYSQL_PASSWORD: props

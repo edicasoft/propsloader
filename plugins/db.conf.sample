@@ -1,0 +1,6 @@
+[db]
+enable_plugin = true
+host = db
+database = propsloader
+user = props
+password = props
