@@ -20,7 +20,7 @@ class ImotbgController(CementBaseController):
 
     def process_prop_info(self, info):
         html_content = self.load_html(info['url'])
-        if not re.search(r'<div style=".*?<b>Частно лице', html_content, re.I | re.DOTALL):
+        if not re.search(r'<div style=".*?<b>(Частно лице|Строителна)', html_content, re.I | re.DOTALL):
             return None
 
         p = re.compile('<img src=".*?phone-ico.gif".*?<span.*?>.*?(?P<phone>\d+).*?</span>',
