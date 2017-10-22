@@ -32,33 +32,33 @@ class ImotbgController(CementBaseController):
         page = 0
         found = []
         meet_end = False
+        p = re.compile('<table width=660.*?<div class="price".*?</table>', re.I | re.DOTALL)
+        tp = re.compile('<a href="//www\.imot\.bg/pcgi/imot\.cgi\?act=5&adv=(?P<id>\w+)&.*?class="photoLink"'
+                        '.*?<div class="price">\s*(?P<price>\d+\s*\w+)'
+                        '.*?<a href="//(?P<url>.*?)" class="lnk1">(?P<title>.*?)</a>'
+                        '.*?<td align="right".*?>(?P<is_vip>.*?)</td>'
+                        '.*?<td align="right".*?>(?P<is_agency>.*?)</td>',
+                        re.I | re.DOTALL)
         while page < 10 and not meet_end:
             page += 1
             self.app.log.debug('imotbg. loading page #%s' % page)
             html_content = self.load_html(self.source_url % page)
-            p = re.compile('<table width=660.*?<div class="price".*?</table>', re.I | re.DOTALL)
-            tp = re.compile('<a href="//www\.imot\.bg/pcgi/imot\.cgi\?act=5&adv=(?P<id>\w+)&.*?class="photoLink"'
-                            '.*?<div class="price">\s*(?P<price>\d+\s*\w+)'
-                            '.*?<a href="//(?P<url>.*?)" class="lnk1">(?P<title>.*?)</a>'
-                            '.*?<td align="right".*?>(?P<is_vip>.*?)</td>'
-                            '.*?<td align="right".*?>(?P<is_agency>.*?)</td>',
-                            re.I | re.DOTALL)
             tables = p.finditer(html_content)
             for table in tables:
                 info = tp.search(table.group()).groupdict()
                 info['url'] = "https://%s" % info['url']
+                info['source'] = 'imotbg'
                 if re.search(r'(vip_sm\.gif|top_sm\.gif)', info["is_vip"]) or \
                         re.search(r'<a href', info["is_agency"]):
                     continue
 
-                prop = self.app.db.get_property(info['id'])
+                prop = self.app.db.get_property(info['source'], info['id'])
                 if prop:
                     meet_end = True
                     break
 
                 info = self.process_prop_info(info)
                 if info:
-                    info['source'] = 'imotbg'
                     found.append(info)
                     self.app.db.insert_property(info)
                     self.app.telegram_send_property(info)
@@ -78,7 +78,7 @@ class ImotbgController(CementBaseController):
         while True:
             count += 1
             found = self.parse()
-            self.app.log.info("found %s private properties" % len(found))
+            self.app.log.info("imotbg found %s private properties" % len(found))
             interval = self.app.config.get('loader', 'load_interval')
             sleep(int(interval))
 

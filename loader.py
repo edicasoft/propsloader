@@ -25,7 +25,7 @@ class Loader(CementApp):
     class Meta:
         label = 'Loader'
         base_controller = 'base'
-        handlers = [BaseController, src.ImotbgController]
+        handlers = [BaseController, src.ImotbgController, src.AlobgController]
         extensions = ['daemon']
         # plugin_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'plugins')
         plugin_bootstrap = 'parsebets.bootstrap',

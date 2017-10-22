@@ -32,16 +32,17 @@ class Database:
         self._db.commit()
         return new_id
 
-    def get_property(self, id):
+    def get_property(self, source, id):
         """
         simple select property by id
-        :param code: property ID
+        :param source: property source
+        :param id: property ID
         :return: row as dictionary or None
         """
         # print(id)
         c = self._db.cursor()
         c.execute("""select id, source, created, title, phone, url FROM properties
-                 WHERE id = %s""", (id,))
+                 WHERE source = %s and id = %s""", (source, id,))
         row = c.fetchone()
         return row
 
@@ -51,6 +52,7 @@ class Database:
         :param data: dict
         :return: inserted ID
         """
+        data['title'] = data['title'][:100]
         c = self._db.cursor()
         c.execute("""insert into properties (id, source, title, phone, url)
                               values (%s, %s, %s, %s, %s)""",
